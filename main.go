@@ -2,8 +2,9 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"github.com/core-go/config"
+	"github.com/core-go/log/rotatelogs"
+	log "github.com/core-go/log/zap"
 
 	"go-service/internal/app"
 )
@@ -14,15 +15,21 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	fmt.Println("Export file")
+	_, err = log.InitializeWithWriter(conf.Log, rotatelogs.GetWriter)
+	if err != nil {
+		panic(err)
+	}
 	ctx := context.Background()
+	log.Info(ctx, "Export file")
 	app, err := app.NewApp(ctx, conf)
 	if err != nil {
+		log.Errorf(ctx, "Error when initialize: %v", err)
 		panic(err)
 	}
 	err = app.Export(ctx)
 	if err != nil {
+		log.Errorf(ctx, "Error when export: %v", err)
 		panic(err)
 	}
+	log.Info(ctx, "Exported file")
 }
