@@ -21,11 +21,11 @@ func NewApp(ctx context.Context, conf Config) (*ApplicationContext, error) {
 	}
 	userType := reflect.TypeOf(User{})
 	formatWriter, err := export.NewFixedLengthFormatter(userType)
-	if err != nil {
+	if err != nil { 
 		return nil, err
 	}
 	writer, err := export.NewFileWriter(GenerateFileName)
-	if err != nil {
+	if err != nil { 
 		return nil, err
 	}
 	exportService, err := export.NewExporter(db, userType, BuildQuery, formatWriter.Format, writer.Write, writer.Close)
