@@ -1,6 +1,6 @@
 sql:
-  driver: mysql
-  data_source_name: root:abcd1234@/masterdata?charset=utf8&parseTime=True&loc=Local
+  driver: postgres
+  data_source_name: postgres://postgres:abcd1234@localhost/masterdata?sslmode=disable
 
 log:
   level: info

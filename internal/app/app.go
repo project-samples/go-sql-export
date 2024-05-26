@@ -3,8 +3,9 @@ package app
 import (
 	"context"
 	"database/sql"
-	"github.com/core-go/io/export"
-	_ "github.com/go-sql-driver/mysql"
+	q "github.com/core-go/io/export/sql"
+	"github.com/core-go/io/writer"
+	_ "github.com/lib/pq"
 	"path/filepath"
 	"reflect"
 	"time"
@@ -20,15 +21,15 @@ func NewApp(ctx context.Context, conf Config) (*ApplicationContext, error) {
 		return nil, err
 	}
 	userType := reflect.TypeOf(User{})
-	formatWriter, err := export.NewFixedLengthFormatter(userType)
-	if err != nil { 
+	formatWriter, err := writer.NewFixedLengthFormatter(userType)
+	if err != nil {
 		return nil, err
 	}
-	writer, err := export.NewFileWriter(GenerateFileName)
-	if err != nil { 
+	writer, err := writer.NewFileWriter(GenerateFileName)
+	if err != nil {
 		return nil, err
 	}
-	exportService, err := export.NewExporter(db, userType, BuildQuery, formatWriter.Format, writer.Write, writer.Close)
+	exportService, err := q.NewExporter(db, userType, BuildQuery, formatWriter.Format, writer.Write, writer.Close)
 	if err != nil {
 		return nil, err
 	}
@@ -47,13 +48,13 @@ type User struct {
 }
 
 func BuildQuery(ctx context.Context) (string, []interface{}) {
-	query := "select id, username, email, phone, status, createdDate from users"
+	query := "select id, username, email, phone, status, createdDate from userimport"
 	params := make([]interface{}, 0)
 	return query, params
 }
 func GenerateFileName() string {
 	fileName := time.Now().Format("20060102150405") + ".csv"
 	fullPath := filepath.Join("export", fileName)
-	export.DeleteFile(fullPath)
+	writer.DeleteFile(fullPath)
 	return fullPath
 }
