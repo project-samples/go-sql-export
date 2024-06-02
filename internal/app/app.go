@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/core-go/io/export"
-	"github.com/core-go/io/writer"
-	"github.com/core-go/io/writer/formatter"
+	f "github.com/core-go/io/formatter"
+	w "github.com/core-go/io/writer"
 	_ "github.com/lib/pq"
 )
 
@@ -21,15 +21,15 @@ func NewApp(ctx context.Context, cfg Config) (*ApplicationContext, error) {
 	if err != nil {
 		return nil, err
 	}
-	formatWriter, err := formatter.NewFixedLengthFormatter[User]()
+	formatter, err := f.NewFixedLengthFormatter[User]()
 	if err != nil {
 		return nil, err
 	}
-	writer, err := writer.NewFileWriter(GenerateFileName)
+	writer, err := w.NewFileWriter(GenerateFileName)
 	if err != nil {
 		return nil, err
 	}
-	exportService, err := export.NewExporter(db, BuildQuery, formatWriter.Format, writer.Write, writer.Close)
+	exportService, err := export.NewExporter(db, BuildQuery, formatter.Format, writer.Write, writer.Close)
 	if err != nil {
 		return nil, err
 	}
@@ -56,6 +56,6 @@ func BuildQuery(ctx context.Context) (string, []interface{}) {
 func GenerateFileName() string {
 	fileName := time.Now().Format("20060102150405") + ".csv"
 	fullPath := filepath.Join("export", fileName)
-	writer.DeleteFile(fullPath)
+	w.DeleteFile(fullPath)
 	return fullPath
 }
