@@ -3,25 +3,25 @@ package app
 import (
 	"context"
 	"database/sql"
-	q "github.com/core-go/io/export/sql"
-	"github.com/core-go/io/writer"
-	_ "github.com/lib/pq"
 	"path/filepath"
-	"reflect"
 	"time"
+
+	q "github.com/core-go/io/export"
+	"github.com/core-go/io/writer"
+	"github.com/core-go/io/writer/formatter"
+	_ "github.com/lib/pq"
 )
 
 type ApplicationContext struct {
-	Export func(ctx context.Context) error
+	Export func(ctx context.Context) (int64, error)
 }
 
-func NewApp(ctx context.Context, conf Config) (*ApplicationContext, error) {
-	db, err := sql.Open(conf.Sql.Driver, conf.Sql.DataSourceName)
+func NewApp(ctx context.Context, cfg Config) (*ApplicationContext, error) {
+	db, err := sql.Open(cfg.Sql.Driver, cfg.Sql.DataSourceName)
 	if err != nil {
 		return nil, err
 	}
-	userType := reflect.TypeOf(User{})
-	formatWriter, err := writer.NewFixedLengthFormatter(userType)
+	formatWriter, err := formatter.NewDelimiterFormatter[User]()
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +29,7 @@ func NewApp(ctx context.Context, conf Config) (*ApplicationContext, error) {
 	if err != nil {
 		return nil, err
 	}
-	exportService, err := q.NewExporter(db, userType, BuildQuery, formatWriter.Format, writer.Write, writer.Close)
+	exportService, err := q.NewExporter(db, BuildQuery, formatWriter.Format, writer.Write, writer.Close)
 	if err != nil {
 		return nil, err
 	}
@@ -41,6 +41,7 @@ func NewApp(ctx context.Context, conf Config) (*ApplicationContext, error) {
 type User struct {
 	Id          string     `json:"id" gorm:"column:id;primary_key" bson:"_id" format:"%011s" length:"11" dynamodbav:"id" firestore:"id" validate:"required,max=40"`
 	Username    string     `json:"username" gorm:"column:username" bson:"username" length:"10" dynamodbav:"username" firestore:"username" validate:"required,username,max=100"`
+	Test        string     `json:"test" gorm:"-" bson:"username" length:"0" format:"-" dynamodbav:"test" firestore:"test" validate:"required,username,max=100"`
 	Email       *string    `json:"email" gorm:"column:email" bson:"email" dynamodbav:"email" firestore:"email" length:"31" validate:"email,max=100"`
 	Phone       string     `json:"phone" gorm:"column:phone" bson:"phone" dynamodbav:"phone" firestore:"phone" length:"20" validate:"required,phone,max=18"`
 	Status      bool       `json:"status" gorm:"column:status" true:"1" false:"0" bson:"status" dynamodbav:"status" format:"%5s" length:"5" firestore:"status" validate:"required"`
@@ -52,6 +53,7 @@ func BuildQuery(ctx context.Context) (string, []interface{}) {
 	params := make([]interface{}, 0)
 	return query, params
 }
+
 func GenerateFileName() string {
 	fileName := time.Now().Format("20060102150405") + ".csv"
 	fullPath := filepath.Join("export", fileName)
