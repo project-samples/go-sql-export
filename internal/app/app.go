@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"time"
 
-	q "github.com/core-go/io/export"
+	"github.com/core-go/io/export"
 	"github.com/core-go/io/writer"
 	"github.com/core-go/io/writer/formatter"
 	_ "github.com/lib/pq"
@@ -21,7 +21,7 @@ func NewApp(ctx context.Context, cfg Config) (*ApplicationContext, error) {
 	if err != nil {
 		return nil, err
 	}
-	formatWriter, err := formatter.NewDelimiterFormatter[User]()
+	formatWriter, err := formatter.NewFixedLengthFormatter[User]()
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +29,7 @@ func NewApp(ctx context.Context, cfg Config) (*ApplicationContext, error) {
 	if err != nil {
 		return nil, err
 	}
-	exportService, err := q.NewExporter(db, BuildQuery, formatWriter.Format, writer.Write, writer.Close)
+	exportService, err := export.NewExporter(db, BuildQuery, formatWriter.Format, writer.Write, writer.Close)
 	if err != nil {
 		return nil, err
 	}
