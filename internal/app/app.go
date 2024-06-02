@@ -29,12 +29,12 @@ func NewApp(ctx context.Context, cfg Config) (*ApplicationContext, error) {
 	if err != nil {
 		return nil, err
 	}
-	exportService, err := export.NewExporter(db, BuildQuery, formatter.Format, writer.Write, writer.Close)
+	exporter, err := export.NewExporter(db, BuildQuery, formatter.Format, writer.Write, writer.Close)
 	if err != nil {
 		return nil, err
 	}
 	return &ApplicationContext{
-		Export: exportService.Export,
+		Export: exporter.Export,
 	}, nil
 }
 
