@@ -20,3 +20,4 @@
 *.SVN
 export
 logs
+.DS_Store
