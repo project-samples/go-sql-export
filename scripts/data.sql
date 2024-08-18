@@ -4,7 +4,91 @@ create table if not exists userimport (
     email varchar(45),
     phone varchar(45),
     status varchar(45),
-    createdDate timestamptz,
+    createddate timestamptz,
+
+    username1 varchar(45),
+    email1 varchar(45),
+    phone1 varchar(45),
+    status1 varchar(45),
+    createddate1 timestamptz,
+
+    username2 varchar(45),
+    email2 varchar(45),
+    phone2 varchar(45),
+    status2 varchar(45),
+    createddate2 timestamptz,
+
+    username3 varchar(45),
+    email3 varchar(45),
+    phone3 varchar(45),
+    status3 varchar(45),
+    createddate3 timestamptz,
+
+    username4 varchar(45),
+    email4 varchar(45),
+    phone4 varchar(45),
+    status4 varchar(45),
+    createddate4 timestamptz,
+
+    username5 varchar(45),
+    email5 varchar(45),
+    phone5 varchar(45),
+    status5 varchar(45),
+    createddate5 timestamptz,
+
+    username6 varchar(45),
+    email6 varchar(45),
+    phone6 varchar(45),
+    status6 varchar(45),
+    createddate6 timestamptz,
+
+    username7 varchar(45),
+    email7 varchar(45),
+    phone7 varchar(45),
+    status7 varchar(45),
+    createddate7 timestamptz,
+
+    username8 varchar(45),
+    email8 varchar(45),
+    phone8 varchar(45),
+    status8 varchar(45),
+    createddate8 timestamptz,
+
+    username9 varchar(45),
+    email9 varchar(45),
+    phone9 varchar(45),
+    status9 varchar(45),
+    createddate9 timestamptz,
+
+    username10 varchar(45),
+    email10 varchar(45),
+    phone10 varchar(45),
+    status10 varchar(45),
+    createddate10 timestamptz,
+
+    username11 varchar(45),
+    email11 varchar(45),
+    phone11 varchar(45),
+    status11 varchar(45),
+    createddate11 timestamptz,
+
+    username12 varchar(45),
+    email12 varchar(45),
+    phone12 varchar(45),
+    status12 varchar(45),
+    createddate12 timestamptz,
+
+    username13 varchar(45),
+    email13 varchar(45),
+    phone13 varchar(45),
+    status13 varchar(45),
+    createddate13 timestamptz,
+
+    username14 varchar(45),
+    email14 varchar(45),
+    phone14 varchar(45),
+    status14 varchar(45),
+    createddate14 timestamptz,
+
     primary key (id)
 );
-insert into userimport values ('1','abraham59','rory30@example.com','975-283-2267','1','2019-02-20 14:50:08'),('2','jerde.tito','qpacocha@example.com','(738)952-6078x1634','1','1995-06-13 12:49:06'),('3','shanon.gaylord','candelario.grant@example.net','1-691-238-8463','','1983-02-05 06:24:16'),('4','christiana60','louie85@example.org','361-461-5922','','2004-08-21 08:01:17'),('5','shyann52','alford91@example.com','05794709754','','1983-07-12 17:53:53'),('6','stone48','lance40@example.com','+37(4)0884560459','','2005-03-02 09:16:48'),('7','laurence64','colleen65@example.com','+81(3)8218226349','','2020-08-16 10:59:55'),('8','zstanton','stroman.jade@example.com','(423)483-5096','','2005-09-16 10:02:53'),('9','tschultz','kory.kunze@example.net','040-373-7213x048','','2018-06-28 12:15:40');

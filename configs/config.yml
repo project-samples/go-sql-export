@@ -1,6 +1,6 @@
 sql:
   driver: postgres
-  data_source_name: postgres://postgres:abcd1234@localhost/masterdata?sslmode=disable
+  data_source_name: postgres://postgres:abcd1234@localhost/importdb?sslmode=disable
 
 log:
   level: info
