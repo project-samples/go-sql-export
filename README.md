@@ -12,6 +12,8 @@ Exporting large volumes of data efficiently from SQL into a CSV or fixed-length 
 - Database: PosgreSQL 16
 - Total of rows: 1.018.584 rows
 - Total of columns: 76 columns
+- Power Usage: Very High
+- CPU: 15%
 
 <table><thead><tr>
 <td><b>Type</b></td>
@@ -19,7 +21,6 @@ Exporting large volumes of data efficiently from SQL into a CSV or fixed-length 
 <td><b>Rows</b></td>
 <td><b>RAM</b></td>
 <td><b>Disk</b></td>
-<td><b>Power Usage</b></td>
 <td><b>Duration</b></td>
 <td><b>Description</b></td>
 </tr></thead><tbody>
@@ -30,7 +31,6 @@ Exporting large volumes of data efficiently from SQL into a CSV or fixed-length 
 <td>1,018,584</td>
 <td>15 M</td>
 <td>10.1 M/s</td>
-<td>Very High</td>
 <td>1 min 53 sec</td>
 <td>Full scan the table</td>
 </tr>
@@ -41,7 +41,6 @@ Exporting large volumes of data efficiently from SQL into a CSV or fixed-length 
 <td>1,018,584</td>
 <td>15 M</td>
 <td>10.1 M/s</td>
-<td>Very High</td>
 <td>1 min 25 sec</td>
 <td>Full scan the table</td>
 </tr>
@@ -52,7 +51,6 @@ Exporting large volumes of data efficiently from SQL into a CSV or fixed-length 
 <td>905,408</td>
 <td>15 M</td>
 <td>10.1 M/s</td>
-<td>Very High</td>
 <td>1 min 39 sec</td>
 <td>Filter by index on 1 field</td>
 </tr>
@@ -63,7 +61,6 @@ Exporting large volumes of data efficiently from SQL into a CSV or fixed-length 
 <td>905,408</td>
 <td>15 M</td>
 <td>10.1 M/s</td>
-<td>Very High</td>
 <td>1 min 10 sec</td>
 <td>Filter by index on 1 field</td>
 </tr>
@@ -74,7 +71,6 @@ Exporting large volumes of data efficiently from SQL into a CSV or fixed-length 
 <td>792,232</td>
 <td>14 M</td>
 <td>9.9 M/s</td>
-<td>Very High</td>
 <td>1 min 29 sec</td>
 <td>Filter by index on 1 field</td>
 </tr>
@@ -85,7 +81,6 @@ Exporting large volumes of data efficiently from SQL into a CSV or fixed-length 
 <td>792,232</td>
 <td>14 M</td>
 <td>9.9 M/s</td>
-<td>Very High</td>
 <td>1 min</td>
 <td>Filter by index on 1 field</td>
 </tr>
