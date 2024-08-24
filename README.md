@@ -59,7 +59,7 @@ Exporting large volumes of data efficiently from SQL into a CSV or fixed-length 
 
 <tr>
 <td>CSV</td>
-<td>0.975 GB</td>
+<td>0.863 GB</td>
 <td>905,408</td>
 <td>15 M</td>
 <td>10.1 M/s</td>
@@ -70,7 +70,7 @@ Exporting large volumes of data efficiently from SQL into a CSV or fixed-length 
 
 <tr>
 <td>Fix Length</td>
-<td>10.89 GB</td>
+<td>0.89 GB</td>
 <td>792,232</td>
 <td>14 M</td>
 <td>9.9 M/s</td>
@@ -81,7 +81,7 @@ Exporting large volumes of data efficiently from SQL into a CSV or fixed-length 
 
 <tr>
 <td>CSV</td>
-<td>0.975 GB</td>
+<td>0.764 GB</td>
 <td>792,232</td>
 <td>14 M</td>
 <td>9.9 M/s</td>
