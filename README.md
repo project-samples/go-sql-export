@@ -31,17 +31,17 @@ Exporting large volumes of data efficiently from SQL into a CSV or fixed-length 
 <td>1,018,584</td>
 <td>15 M</td>
 <td>10.1 M/s</td>
-<td>1 min 53 sec</td>
+<td>1 min 45 sec</td>
 <td>Full scan the table</td>
 </tr>
 
 <tr>
 <td>CSV</td>
-<td>0.975 GB</td>
+<td>975 MB</td>
 <td>1,018,584</td>
 <td>15 M</td>
 <td>10.1 M/s</td>
-<td>1 min 25 sec</td>
+<td>1 min 12 sec</td>
 <td>Full scan the table</td>
 </tr>
 
@@ -51,37 +51,57 @@ Exporting large volumes of data efficiently from SQL into a CSV or fixed-length 
 <td>905,408</td>
 <td>15 M</td>
 <td>10.1 M/s</td>
-<td>1 min 39 sec</td>
+<td>1 min 33 sec</td>
 <td>Filter by index on 1 field</td>
 </tr>
 
 <tr>
 <td>CSV</td>
-<td>0.863 GB</td>
+<td>863 MB</td>
 <td>905,408</td>
 <td>15 M</td>
 <td>10.1 M/s</td>
-<td>1 min 10 sec</td>
+<td>1 min 3 sec</td>
 <td>Filter by index on 1 field</td>
 </tr>
 
 <tr>
 <td>Fix Length</td>
-<td>0.89 GB</td>
+<td>890 MB</td>
 <td>792,232</td>
 <td>14 M</td>
 <td>9.9 M/s</td>
-<td>1 min 29 sec</td>
+<td>1 min 23 sec</td>
 <td>Filter by index on 1 field</td>
 </tr>
 
 <tr>
 <td>CSV</td>
-<td>0.764 GB</td>
+<td>764 MB</td>
 <td>792,232</td>
 <td>14 M</td>
 <td>9.9 M/s</td>
-<td>1 min</td>
+<td>55 sec</td>
+<td>Filter by index on 1 field</td>
+</tr>
+
+<tr>
+<td>Fix Length</td>
+<td>254 MB</td>
+<td>226,352</td>
+<td>14 M</td>
+<td>9.9 M/s</td>
+<td>24 sec</td>
+<td>Filter by index on 1 field</td>
+</tr>
+
+<tr>
+<td>CSV</td>
+<td>220 M</td>
+<td>226,352</td>
+<td>14 M</td>
+<td>9.9 M/s</td>
+<td>16 sec</td>
 <td>Filter by index on 1 field</td>
 </tr>
 
@@ -93,29 +113,59 @@ Differ from online processing:
 - Non-interactive, often include logic for handling errors
 - Large volumes of data
 
-### Challenges
-- <b>Data Volume</b>: Handling 1 million records can strain memory and I/O if not optimized.
-- <b>Fixed-Length Format</b>: Properly formatting records to fit fixed-length constraints.
-- <b>Database Query Performance</b>: Efficiently retrieving records without overloading the database.
+### Common Mistakes
+- <b>Inefficient Writing to I/O</b>: Large writing to I/O can slow down performance. Writing each record immediately without buffering is inefficient due to the high overhead of repeated I/O operations.
+  - <b>Solution</b>: Use "<b>bufio.Writer</b>" for more efficient writing.
+- <b>Loading All Data Into Memory</b>: Fetching all records at once can consume a lot of memory, causing the program to slow down or crash. Use streaming with cursors instead.
+  - <b>Solution</b>: Loop on each cursor. On each cursor, use bufio.Writer to write to database
+- <b>Inefficient Query</b>: Full scan the table. Do not filter on the index.
+  - <b>Solution</b>: If you export the whole table, you can scan the full table. If not, you need to filter on the index.
 
-### High-Performance Strategy
-#### Streaming Data:
-- Instead of loading all records into memory, stream records from SQL to the file. This reduces memory consumption and handles large datasets more efficiently.
-- Use GO SDK cursor-based query to fetch data in chunks.
-#### Buffered Writing:
-- Utilize Go’s bufio.Writer to buffer writes to the file. This reduces the number of I/O operations, improving performance.
-#### Efficient Queries:
-- Fetch data in batches using LIMIT and OFFSET clauses or use a cursor to paginate through the data.
-- Avoid fetching all records at once to prevent memory exhaustion.
-#### Error Handling:
-- Implement robust error handling to manage failures during the export process, such as network interruptions or file write failures.
+### Implementation
+#### Data Reader for SQL
+1. Build Query: For efficient query, you need to filter on the index, avoid to scan the full table. In my sample, I created index on field createdDate. In my 6 use cases, I use 4 use cases to filter on indexing field: createdDate.
+2. Scan the GO row into an appropriate GO struct:
 
-### Advantages of This Approach
-- <b>Memory Efficiency</b>: Streaming data minimizes memory usage, making the export process scalable for large datasets.
-- <b>I/O Optimization</b>: Buffered writing reduces the overhead of frequent file I/O operations.
+   We provide a function to map a row to a GO struct. We use gorm tag, so that this struct can be reused for gorm later, with these benefits:
+    - Simplifies the process of converting database rows into Go objects.
+    - Reduces repetitive code and potential errors in manual data mapping.
+    - Enhances code readability and maintainability.
+```go
+type User struct {
+    Id          string     `gorm:"column:id;primary_key" format:"%011s" length:"11"`
+    Username    string     `gorm:"column:username" length:"10"`
+    Email       string     `gorm:"column:email" length:"31"`
+    Phone       string     `gorm:"column:phone" length:"20"`
+    Status      bool       `gorm:"column:status" true:"1" false:"0" format:"%5s" length:"5"`
+    CreatedDate *time.Time `gorm:"column:createdDate" length:"10" format:"dateFormat:2006-01-02"`
+}
+```
 
-### Disadvantages
-- <b>Do not handle Parallel Processing</b>: If implemented, it can greatly accelerate the export process by utilizing multiple cores.
+#### Transformer
+Transform a GO struct to a string (CSV or fixed-length format). We created 2 providers already:
+- CSV Transformer: read GO tags to transform CSV line.
+- Fixed Length Transformer: read GO tags to transform Fixed Length line.
+
+To improve performance, we cache the struct of CSV or Fixed Length Format.
+
+#### File Writer
+- It is a wrapper of "<b>bufio.Writer</b>" to buffer writes to the file. This reduces the number of I/O operations.
+
+### Key Aspects to improve performance:
+- <b>Streaming</b>: The code uses db.QueryContext to fetch records in a streaming manner. This prevents loading all records into memory at once.
+- <b>Memory Management</b>: Since rows are processed one by one, memory usage remains low, even when handling a large number of records.
+- <b>Cache Scanning</b>: to improve performance: based on gorm tag, cache column structure when scanning the GO row into an appropriate GO struct.
+- <b>Cache Transforming</b>: to improve performance, cache CSV or fixed-length format structure when transforming a GO struct into CSV format or fixed-length for
 
 ## Conclusion
-High-performance batch processing for exporting data from SQL to CSV or fixed-length files requires careful management of database queries, memory usage, and file I/O. By leveraging streaming, batching, and buffered writing in Golang, you can efficiently handle large-scale exports, ensuring optimal performance while maintaining data integrity.
+In the sample, I tested with 1 million records, I see Postgres still used less than 14M RAM, and my program used about 15M RAM.
+
+So, for this case, we don't need to use LIMIT/OFFSET , as long as we loop on cursor, at each of cursor, we write to file stream.
+
+In the past, I also test with 4 million records, export 4GB, it still works.
+
+### Other Samples:
+- [go-hive-export](https://github.com/project-samples/go-hive-export): export data from hive to fix-length or csv file.
+- [go-cassandra-export](https://github.com/project-samples/go-cassandra-export): export data from cassandra to fix-length or csv file.
+- [go-mongo-export](https://github.com/project-samples/go-mongo-export): export data from mongo to fix-length or csv file.
+- [go-firestore-export](https://github.com/project-samples/go-firestore-export): export data from firestore to fix-length or csv file.
