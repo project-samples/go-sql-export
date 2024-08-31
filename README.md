@@ -155,7 +155,7 @@ To improve performance, we cache the struct of CSV or Fixed Length Format.
 - <b>Streaming</b>: The code uses db.QueryContext to fetch records in a streaming manner. This prevents loading all records into memory at once.
 - <b>Memory Management</b>: Since rows are processed one by one, memory usage remains low, even when handling a large number of records.
 - <b>Cache Scanning</b>: to improve performance: based on gorm tag, cache column structure when scanning the GO row into an appropriate GO struct.
-- <b>Cache Transforming</b>: to improve performance, cache CSV or fixed-length format structure when transforming a GO struct into CSV format or fixed-length for
+- <b>Cache Transforming</b>: to improve performance, cache CSV or fixed-length format structure when transforming a GO struct into CSV format or fixed-length format.
 
 ## Conclusion
 In the sample, I tested with 1 million records, I see Postgres still used less than 14M RAM, and my program used about 15M RAM.
