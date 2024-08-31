@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/core-go/config v1.0.2
-	github.com/core-go/io v1.0.4
+	github.com/core-go/io v1.2.1
 	github.com/core-go/log v0.1.2
 	github.com/lib/pq v1.10.9
 )
